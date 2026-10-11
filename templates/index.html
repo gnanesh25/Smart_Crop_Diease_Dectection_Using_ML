@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrika — Smart Maize Disease Detection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F4EE;--paper-dim:#EBE9DC;--ink:#17241A;--ink-soft:#4A5A4C;
+  --canopy:#2B4636;--canopy-light:#3F6350;--husk:#C77D3F;--husk-light:#E4A868;
+  --blight:#A93226;--mist:#DCE3D2;--line:rgba(23,36,26,.14);--line-soft:rgba(23,36,26,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--paper);color:var(--ink);font-family:Inter,sans-serif;font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}a{color:inherit}button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--husk);outline-offset:3px}
+.wrap{max-width:1160px;margin:0 auto;padding:0 28px}
+h1,h2,h3{font-family:Fraunces,serif;font-weight:500;letter-spacing:-.01em;color:var(--ink)}
+em{font-style:italic;color:var(--canopy)}
+.eyebrow{font:500 12px 'IBM Plex Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--husk);display:flex;align-items:center;gap:10px}
+.eyebrow:before{content:"";width:16px;height:1px;background:currentColor}
+.nav{position:sticky;top:0;z-index:50;background:rgba(245,244,238,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{display:flex;align-items:center;gap:10px;font:600 20px Fraunces,serif}
+.brand-mark{width:26px;height:26px}
+.nav-links{display:flex;align-items:center;gap:30px;font-size:14px;font-weight:500}
+.nav-links a{text-decoration:none;color:var(--ink-soft)}
+.nav-links a:hover{color:var(--canopy)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:12px 22px;border-radius:100px;border:0;font-size:14px;font-weight:600;text-decoration:none;transition:transform .18s,background .2s}
+.btn-primary{background:var(--canopy);color:var(--paper)}
+.btn-primary:hover{background:var(--canopy-light);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.hero{padding:82px 0 90px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center}
+.hero h1{font-size:clamp(36px,4.4vw,56px);line-height:1.08;margin:18px 0 22px;max-width:12em}
+.lead{font-size:17px;color:var(--ink-soft);max-width:39em;margin-bottom:30px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:34px}
+.hero-stats{display:flex;gap:32px;padding-top:24px;border-top:1px solid var(--line-soft)}
+.stat b{display:block;font:600 26px Fraunces,serif;color:var(--canopy)}
+.stat span{font-size:12px;color:var(--ink-soft)}
+.leaf-frame{position:relative;background:linear-gradient(160deg,#EFEDE3,var(--mist) 120%);border:1px solid var(--line);border-radius:20px;padding:30px;overflow:hidden;aspect-ratio:4/5;display:flex;align-items:center;justify-content:center}
+.leaf-frame:before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(23,36,26,.06) 1px,transparent 1px);background-size:16px 16px}
+.leaf-frame svg{width:76%;position:relative;z-index:1;filter:drop-shadow(0 18px 30px rgba(23,36,26,.18))}
+.scanline{position:absolute;left:0;right:0;height:2px;z-index:3;background:linear-gradient(90deg,transparent,var(--husk) 20%,var(--husk-light) 50%,var(--husk) 80%,transparent);box-shadow:0 0 16px 2px rgba(199,125,63,.55);animation:sweep 3.2s ease-in-out infinite}
+@keyframes sweep{0%{top:12%;opacity:0}8%{opacity:1}50%{top:82%;opacity:1}58%,100%{top:12%;opacity:0}}
+.frame-caption{position:absolute;bottom:16px;left:16px;right:16px;display:flex;justify-content:space-between;gap:10px;align-items:center;font:11px 'IBM Plex Mono',monospace;color:var(--ink-soft);z-index:2}
+.pulse{width:6px;height:6px;border-radius:50%;background:var(--canopy);display:inline-block;margin-right:6px}
+section{padding:86px 0}
+.section-head{max-width:680px;margin-bottom:42px}
+.section-head h2{font-size:clamp(29px,3.2vw,40px);margin-top:14px;line-height:1.15}
+.section-head p{color:var(--ink-soft);margin-top:14px;font-size:16px}
+.scan-section{background:var(--canopy);color:var(--paper);border-radius:28px;margin:0 20px;padding:76px 0}
+.scan-section .wrap{padding:0 44px}
+.scan-section .eyebrow{color:var(--husk-light)}
+.scan-section h2{color:var(--paper)}
+.scan-section .section-head p{color:rgba(245,244,238,.75)}
+.tool{display:grid;grid-template-columns:1fr 1fr;gap:36px;background:rgba(245,244,238,.05);border:1px solid rgba(245,244,238,.14);border-radius:20px;padding:32px}
+.upload-box{border:1.5px dashed rgba(245,244,238,.35);border-radius:16px;padding:34px 22px;text-align:center;transition:.2s;cursor:pointer}
+.upload-box:hover{border-color:var(--husk-light);background:rgba(245,244,238,.05)}
+.upload-box svg{width:40px;height:40px;margin:0 auto 14px;opacity:.85}
+.upload-box p{font-size:14px;color:rgba(245,244,238,.78)}
+.upload-box .browse{color:var(--husk-light);font-weight:600;text-decoration:underline}
+input[type=file]{display:block;width:100%;margin:18px 0;color:var(--paper);font-size:13px}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.actions .btn-ghost{border-color:rgba(245,244,238,.3);color:var(--paper)}
+.preview-card{border-radius:16px;overflow:hidden;position:relative;background:rgba(0,0,0,.15);min-height:280px;display:flex;align-items:center;justify-content:center}
+.preview-card img{width:100%;max-height:420px;object-fit:contain}
+.preview-empty{color:rgba(245,244,238,.45);font-size:14px;text-align:center;padding:20px}
+.error{margin-top:18px;padding:12px 14px;border-radius:10px;background:rgba(169,50,38,.22);color:#ffd2cb;border:1px solid rgba(255,210,203,.2)}
+.result-panel{margin-top:22px;padding:22px;border-radius:14px;background:rgba(245,244,238,.07);border:1px solid rgba(245,244,238,.14)}
+.result-top{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.result-name{font:600 26px Fraunces,serif}
+.result-conf{font:14px 'IBM Plex Mono',monospace;color:var(--husk-light)}
+.result-desc{margin-top:12px;color:rgba(245,244,238,.8);font-size:14px}
+.result-advice{margin-top:14px;padding:14px;border-radius:10px;background:rgba(245,244,238,.06);font-size:13px;color:rgba(245,244,238,.9)}
+.note{margin-top:16px;font-size:12px;color:rgba(245,244,238,.55);line-height:1.65}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.card{border:1px solid var(--line);border-radius:18px;padding:28px;background:linear-gradient(160deg,#fff,var(--paper-dim))}
+.card .num{font:12px 'IBM Plex Mono',monospace;color:var(--husk)}
+.card h3{font-size:22px;margin:12px 0 8px}
+.card p{color:var(--ink-soft);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.tag{font:11px 'IBM Plex Mono',monospace;padding:6px 10px;border-radius:100px;background:var(--mist);color:var(--canopy)}
+footer{border-top:1px solid var(--line-soft);padding:38px 0}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+footer p{font-size:12px;color:var(--ink-soft)}
+@media(max-width:900px){.hero-grid,.tool{grid-template-columns:1fr}.hero .leaf-frame{max-width:360px;margin:0 auto}.nav-links{display:none}.cards{grid-template-columns:1fr}.scan-section{margin:0 10px;border-radius:20px}.scan-section .wrap{padding:0 18px}section{padding:60px 0}.hero{padding:55px 0}.tool{padding:20px}.hero-stats{gap:18px;flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 26 26" fill="none" aria-hidden="true"><path d="M13 2C6 5 3 11 5 18c3 3 9 4 15-2 2-8-1-14-7-14z" fill="#2B4636"/><path d="M13 4V20" stroke="#F5F4EE" stroke-width="1.2" stroke-linecap="round"/></svg>
+      Patrika
+    </div>
+    <nav class="nav-links"><a href="#scan">Detect disease</a><a href="#diseases">Supported classes</a><a href="#how">How it works</a></nav>
+    <a href="#scan" class="btn btn-primary">Analyze image</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="eyebrow">Maize · Thermal image diagnostics</span>
+      <h1>Protect every plant, <em>one scan</em> at a time.</h1>
+      <p class="lead">Upload an exported thermal image of a maize plant. The ResNet50 model classifies it as Downy Mildew, Rust Disease, or Healthy and displays its prediction score.</p>
+      <div class="hero-cta"><a href="#scan" class="btn btn-primary">Analyze a thermal image</a><a href="#how" class="btn btn-ghost">How it works</a></div>
+      <div class="hero-stats">
+        <div class="stat"><b>1</b><span>crop supported</span></div>
+        <div class="stat"><b>3</b><span>model classes</span></div>
+        <div class="stat"><b>ResNet50</b><span>transfer learning</span></div>
+      </div>
+    </div>
+    <div class="leaf-frame" aria-label="Decorative maize leaf illustration">
+      <div class="scanline"></div>
+      <svg viewBox="0 0 300 380" fill="none" aria-hidden="true">
+        <defs><linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#6C8B53"/><stop offset="100%" stop-color="#22392B"/></linearGradient></defs>
+        <path d="M150 10C95 55 35 105 48 210C58 292 111 350 150 370C192 337 247 277 253 195C261 104 207 43 150 10Z" fill="url(#leafGrad)"/>
+        <path d="M150 28L150 354M150 85L100 125M150 120L205 155M150 170L90 205M150 215L215 248M150 265L105 300M150 300L190 326" stroke="#DCE3D2" stroke-width="2" stroke-linecap="round" opacity=".55"/>
+        <ellipse cx="112" cy="165" rx="17" ry="12" fill="#A93226" opacity=".88" transform="rotate(-18 112 165)"/>
+        <ellipse cx="185" cy="245" rx="14" ry="10" fill="#C77D3F" opacity=".9" transform="rotate(12 185 245)"/>
+      </svg>
+      <div class="frame-caption"><span><span class="pulse"></span>ResNet50 ready</span><span>MAIZE / THERMAL</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="scan-section" id="scan">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Model inference</span>
+      <h2>Analyze a maize thermal image</h2>
+      <p>Select an exported thermal image in JPG, PNG, BMP, or TIFF format. Your trained model will process the image on the Flask server.</p>
+    </div>
+    <div class="tool">
+      <div>
+        <form method="POST" action="/" enctype="multipart/form-data" id="uploadForm">
+          <label class="upload-box" for="imageInput" style="display:block">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#F5F4EE" stroke-width="1.4" aria-hidden="true"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3"/></svg>
+            <p>Choose a thermal image or <span class="browse">browse files</span></p>
+          </label>
+          <input type="file" id="imageInput" name="image" accept=".jpg,.jpeg,.png,.bmp,.tif,.tiff,image/*" required>
+          <div class="actions">
+            <button class="btn btn-primary" id="analyzeBtn" type="submit">Analyze image</button>
+            <button class="btn btn-ghost" type="button" id="clearBtn">Clear selection</button>
+          </div>
+        </form>
+        {% if error %}
+          <div class="error" role="alert">{{ error }}</div>
+        {% endif %}
+        <p class="note">Research prototype only. The model may be wrong on unfamiliar images. Use only the three maize classes included in training. The displayed score is a model softmax score, not a guarantee of diagnostic accuracy.</p>
+      </div>
+      <div>
+        <div class="preview-card" id="previewCard">
+          {% if image_url %}
+            <img id="previewImg" src="{{ image_url }}" alt="Uploaded maize thermal image">
+          {% else %}
+            <img id="previewImg" alt="Selected maize thermal image" style="display:none">
+            <span class="preview-empty" id="previewEmpty">Your selected image will appear here</span>
+          {% endif %}
+        </div>
+        {% if prediction %}
+          <div class="result-panel" aria-live="polite">
+            <div class="result-top">
+              <span class="result-name">{{ prediction }}</span>
+              <span class="result-conf">{{ "%.2f"|format(confidence) }}% model score</span>
+            </div>
+            <p class="result-desc">
+              {% if prediction|lower == "healthy" %}
+                The model classified this image as Healthy. Confirm the result with field observations.
+              {% elif "downy" in prediction|lower %}
+                The model classified this image as Downy Mildew. Inspect the plant and consult a qualified agricultural specialist before treatment.
+              {% elif "rust" in prediction|lower %}
+                The model classified this image as Rust Disease. Inspect the plant and consult a qualified agricultural specialist before treatment.
+              {% else %}
+                The model returned this class label. Verify it against the class names used during training.
+              {% endif %}
+            </p>
+            <div class="result-advice"><strong>Next step</strong><br>Use this prediction as a screening aid only. Confirm suspected disease before applying any treatment.</div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="diseases">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="eyebrow">Supported classes</span>
+      <h2>Focused on three maize outcomes</h2>
+      <p>The interface reflects the classes used by your trained ResNet50 model. It does not claim to diagnose crops or diseases outside this set.</p>
+    </div>
+    <div class="cards">
+      <article class="card"><span class="num">CLASS 01</span><h3>Downy Mildew</h3><p>A model prediction indicating a possible Downy Mildew class. Confirm symptoms in the field before acting.</p><div class="tags"><span class="tag">Maize</span><span class="tag">Disease class</span></div></article>
+      <article class="card"><span class="num">CLASS 02</span><h3>Rust Disease</h3><p>A model prediction indicating a possible Rust Disease class. Seek expert confirmation when symptoms are present.</p><div class="tags"><span class="tag">Maize</span><span class="tag">Disease class</span></div></article>
+      <article class="card"><span class="num">CLASS 03</span><h3>Healthy</h3><p>The model did not assign the image to either of the two disease classes. Continue routine crop monitoring.</p><div class="tags"><span class="tag">Maize</span><span class="tag">Healthy class</span></div></article>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="wrap">
+    <div class="section-head"><span class="eyebrow">Process</span><h2>Three steps from image to prediction</h2></div>
+    <div class="cards">
+      <article class="card"><span class="num">01 — UPLOAD</span><h3>Select a thermal image</h3><p>Choose an exported thermal image file from your device. Raw radiometric temperature files may require a separate conversion step.</p></article>
+      <article class="card"><span class="num">02 — INFER</span><h3>ResNet50 analyzes it</h3><p>The Flask backend resizes the image to 224 × 224 pixels and applies the ResNet50 preprocessing used by the application.</p></article>
+      <article class="card"><span class="num">03 — REVIEW</span><h3>Review the class score</h3><p>See the predicted class and model score. This research prototype should not replace field diagnosis or expert advice.</p></article>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap footer-inner"><div class="brand">Patrika · Maize</div><p>Smart Crop Disease Detection · ResNet50 research prototype</p></div></footer>
+
+<script>
+const input = document.getElementById('imageInput');
+const preview = document.getElementById('previewImg');
+const empty = document.getElementById('previewEmpty');
+const clearBtn = document.getElementById('clearBtn');
+const form = document.getElementById('uploadForm');
+const analyzeBtn = document.getElementById('analyzeBtn');
+
+input.addEventListener('change', () => {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    alert('Please select a valid image file.');
+    input.value = '';
+    return;
+  }
+  const url = URL.createObjectURL(file);
+  preview.src = url;
+  preview.style.display = 'block';
+  if (empty) empty.style.display = 'none';
+});
+
+clearBtn.addEventListener('click', () => {
+  input.value = '';
+  preview.removeAttribute('src');
+  preview.style.display = 'none';
+  if (empty) empty.style.display = 'block';
+});
+
+form.addEventListener('submit', () => {
+  if (!input.files || !input.files.length) return;
+  analyzeBtn.disabled = true;
+  analyzeBtn.textContent = 'Analyzing image…';
+});
+</script>
+</body>
+</html>
